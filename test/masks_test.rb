@@ -7,6 +7,7 @@ include IRCSupport::Masks
 describe "Masks" do
   it "should normalize the mask" do
     normalize_mask('*@*').must_equal '*!*@*'
+    normalize_mask('foo*').must_equal 'foo*!*@*'
   end
 
   banmask = 'stalin*!*@*'
