@@ -83,7 +83,7 @@ module IRCSupport
     end
 
     # @param [String] before The "before" mode string.
-    # @param [String] after The "before" mode string.
+    # @param [String] after The "after" mode string.
     # @return [String] A modestring representing the difference between the
     #   two mode strings.
     def diff_modes(before, after)
