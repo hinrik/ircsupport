@@ -188,10 +188,6 @@ module IRCSupport
         @hops, @realname = rest.split /\s/, 2
         @hops = @hops.to_i
       end
-
-      def is_away?
-        return @away
-      end
     end
 
     class DCC < Message
