@@ -296,6 +296,16 @@ traffic = [
     ->(msg) {
       msg.type.must_equal 'server_notice'
       msg.sender.must_equal nil
+      msg.target.must_equal nil
+      msg.message.must_equal 'foo bar'
+    },
+  ],
+  [
+    ':fooserver NOTICE AUTH :foo bar',
+    ->(msg) {
+      msg.type.must_equal 'server_notice'
+      msg.sender.must_equal 'fooserver'
+      msg.target.must_equal 'AUTH'
       msg.message.must_equal 'foo bar'
     },
   ],

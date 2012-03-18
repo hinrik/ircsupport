@@ -526,9 +526,13 @@ module IRCSupport
     class CAP::ACK < CAP::LS; end
 
     class ServerNotice < Message
-      # @return [String] The sender of the server notice (e.g. name of a
-      # server or service), if any.
+      # @return [String] The sender of the notice. Could be a server name,
+      # a service, or nothing at all.
       attr_accessor :sender
+
+      # @return [String] The target of the server notice. Could be '*' or
+      # 'AUTH' or something else entirely.
+      attr_accessor :target
 
       # @return [String] The text of the notice.
       attr_accessor :message
@@ -537,7 +541,12 @@ module IRCSupport
       def initialize(args)
         super(args)
         @sender = args[:prefix]
-        @message = args[:args][0]
+        if args[:args].size == 2
+          @target = args[:args][0]
+          @message = args[:args][1]
+        else
+          @message = args[:args][0]
+        end
       end
     end
 
