@@ -108,7 +108,7 @@ module IRCSupport
     end
 
     # @param [Hash] elems The attributes of the message (as returned
-    #   by `decompose_line`).
+    #   by {#decompose_line}).
     # @return [String] An IRC protocol line.
     def compose_line(elems)
       line = ''
