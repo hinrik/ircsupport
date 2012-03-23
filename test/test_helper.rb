@@ -1,4 +1,5 @@
-require 'minitest/colorize'
-require 'minitest/autorun'
+require 'turn/autorun'
 require 'minitest/spec'
 require 'ircsupport'
+
+Turn.config.format = :dot
