@@ -1,5 +1,7 @@
 module IRCSupport
   module Modes
+    module_function
+
     # @param [Array] modes The modes you want to parse.
     # @return [Array] Each element will be a hash with two keys: `:set`,
     #   a boolean indicating whether the mode is being set (instead of unset);
@@ -95,7 +97,5 @@ module IRCSupport
       result << added.map { |m| '+' + m }.join
       return condense_modes(result)
     end
-
-    module_function :parse_modes, :parse_channel_modes, :condense_modes, :diff_modes
   end
 end

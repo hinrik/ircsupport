@@ -7,6 +7,8 @@ module IRCSupport
     # @private
     @@mask_optional = '[\x01-\xFF]{1,1}'
 
+    module_function
+
     # @param [String] mask The mask to match against.
     # @param [String] string The string to match against the mask.
     # @param [Symbol] casemapping The IRC casemapping to use in the match.
@@ -66,7 +68,5 @@ module IRCSupport
       (1..2).each { |i| parts[i] ||= '*' }
       return parts[0] + "!" + parts[1] + "@" + parts[2]
     end
-
-    module_function :matches_mask, :matches_mask_array, :normalize_mask
   end
 end

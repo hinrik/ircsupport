@@ -1,5 +1,7 @@
 module IRCSupport
   module Encoding
+    module_function
+
     # @param [String] string The IRC string you want to decode.
     # @param [Symbol] encoding The source encoding.
     # @return [String] A UTF-8 Ruby string.
@@ -68,7 +70,5 @@ module IRCSupport
 
       return string
     end
-
-    module_function :decode_irc, :decode_irc!, :encode_irc, :encode_irc!
   end
 end

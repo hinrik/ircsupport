@@ -10,6 +10,8 @@ module IRCSupport
     # @private
     @@channel = /[^\x00\x07\x0a\x0d :,]+/
 
+    module_function
+
     # @param [String] nickname A nickname to validate.
     # @return [Boolean] Will be true if the nickname is valid.
     def valid_nickname?(nickname)
@@ -27,7 +29,5 @@ module IRCSupport
       return true if channel =~ /\A[#{prefix}]#@@channel\z/
       return false
     end
-
-    module_function :valid_nickname?, :valid_channel_name?
   end
 end

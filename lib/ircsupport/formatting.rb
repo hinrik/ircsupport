@@ -47,6 +47,8 @@ module IRCSupport
       silver: "15",
     }
 
+    module_function
+
     # @param [String] string The string you want to check.
     # @return [Boolean] Will be true if the string contains IRC color codes.
     def has_color?(string)
@@ -142,8 +144,5 @@ module IRCSupport
       string = string.dup
       return irc_format!(*settings, string)
     end
-
-    module_function :has_color?, :has_formatting?, :strip_color, :strip_color!,
-                    :strip_formatting, :strip_formatting!, :irc_format
   end
 end

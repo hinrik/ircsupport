@@ -225,6 +225,8 @@ module IRCSupport
     # @private
     @@name_to_numeric_map = @@numeric_to_name_map.invert
 
+    module_function
+
     # @param [String] numeric A numeric to look up.
     # @return [String] The name of the numeric.
     def numeric_to_name(numeric)
@@ -236,7 +238,5 @@ module IRCSupport
     def name_to_numeric(name)
       return @@name_to_numeric_map[name]
     end
-
-    module_function :numeric_to_name, :name_to_numeric
   end
 end

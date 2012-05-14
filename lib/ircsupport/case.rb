@@ -7,6 +7,8 @@ module IRCSupport
     # @private
     @@strict_rfc1459_map = ['a-z{}|', 'A-Z[]\\']
 
+    module_function
+
     # @param [String] irc_string An IRC string (nickname, channel, etc).
     # @param [Symbol] casemapping An IRC casemapping.
     # Like {#irc_upcase}, but modifies the string in place.
@@ -77,8 +79,5 @@ module IRCSupport
     def irc_eql?(first, second, casemapping = :rfc1459)
       return irc_upcase(first, casemapping) == irc_upcase(second, casemapping)
     end
-
-    module_function :irc_upcase, :irc_upcase!, :irc_downcase,
-                    :irc_downcase!, :irc_eql?
   end
 end
