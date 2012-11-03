@@ -109,8 +109,8 @@ Supported platforms
 -------------------
 
 IRCSupport works on any Ruby 1.9-compatible VM. As of this writing, Rubinius'
-and JRuby's encoding support is not complete, so some of the functions in
-`IRCSupport::Encoding` will not work on those platforms.
+encoding support is not complete, so some of the functions in
+`IRCSupport::Encoding` will not work on that platform.
 
 Contributing
 ------------
