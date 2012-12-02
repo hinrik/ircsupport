@@ -65,6 +65,9 @@ numeric_to_name('001')
 # => 'RPL_WELCOME'
 ```
 
+See the [API documentation](http://www.rubydoc.info/gems/ircsupport/file/README.md)
+for more details.
+
 Components
 ----------
 
