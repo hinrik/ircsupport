@@ -49,6 +49,7 @@ module IRCSupport
 
     module_function
 
+    # Check if string has IRC color codes.
     # @param [String] string The string you want to check.
     # @return [Boolean] Will be true if the string contains IRC color codes.
     def has_color?(string)
@@ -56,6 +57,7 @@ module IRCSupport
       return false
     end
 
+    # Check if string has IRC formatting codes.
     # @param [String] string The string you want to check.
     # @return [Boolean] Will be true if the string contains IRC formatting codes.
     def has_formatting?(string)
@@ -63,8 +65,8 @@ module IRCSupport
       return false
     end
 
+    # Strip IRC color codes from a string, modifying it in place.
     # @param [String] string The string you want to strip.
-    # Like {#strip_color}, but modifies the string in place.
     # @return [String] A string stripped of all IRC color codes.
     def strip_color!(string)
       [@@mirc_color, @@rgb_color, @@ecma48_color].each do |pattern|
@@ -75,6 +77,7 @@ module IRCSupport
       return string
     end
 
+    # Strip IRC color codes from a string.
     # @param [String] string The string you want to strip.
     # @return [String] A string stripped of all IRC color codes.
     def strip_color(string)
@@ -82,8 +85,8 @@ module IRCSupport
       return strip_color!(string)
     end
 
+    # Strip IRC formatting codes from a string, modifying it in place.
     # @param [String] string The string you want to strip.
-    # Like {#strip_formatting}, but modifies the string in place.
     # @return [String] A string stripped of all IRC formatting codes.
     def strip_formatting!(string)
       string.gsub!(@@formatting, '')
@@ -92,6 +95,7 @@ module IRCSupport
       return string
     end
 
+    # Strip IRC formatting codes from a string.
     # @param [String] string The string you want to strip.
     # @return [String] A string stripped of all IRC formatting codes.
     def strip_formatting(string)
@@ -99,9 +103,9 @@ module IRCSupport
       return strip_formatting!(string)
     end
 
+    # Apply IRC formatting codes to a string, modifying it in place.
     # @param [*Array] settings A list of color and formatting attributes you
     #   want to apply.
-    # Like {#irc_format}, but modifies the string in place.
     # @param [String] string A string you want to format.
     # @return [String] A formatted string.
     def irc_format!(*settings, string)
@@ -136,6 +140,7 @@ module IRCSupport
       return string
     end
 
+    # Apply IRC formatting codes to a string.
     # @param [*Array] settings A list of color and formatting attributes you
     #   want to apply.
     # @param [String] string A string you want to format.

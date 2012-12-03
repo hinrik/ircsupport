@@ -227,12 +227,14 @@ module IRCSupport
 
     module_function
 
+    # Look up the name of an IRC numeric.
     # @param [String] numeric A numeric to look up.
     # @return [String] The name of the numeric.
     def numeric_to_name(numeric)
       return @@numeric_to_name_map[numeric]
     end
 
+    # Look up an IRC numeric by name.
     # @param [String] name A name to look up.
     # @return [String] The numeric corresponding to the name.
     def name_to_numeric(name)

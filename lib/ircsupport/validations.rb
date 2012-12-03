@@ -12,6 +12,7 @@ module IRCSupport
 
     module_function
 
+    # Check if a string is a valid nickname.
     # @param [String] nickname A nickname to validate.
     # @return [Boolean] Will be true if the nickname is valid.
     def valid_nickname?(nickname)
@@ -19,6 +20,7 @@ module IRCSupport
       return false
     end
 
+    # Check if a string is a valid channel name.
     # @param [String] channel A channel name to validate.
     # @param [Array] chantypes The channel types which are allowed. This is
     #   the same as the "CHANTYPES" isupport option.

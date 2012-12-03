@@ -9,9 +9,9 @@ module IRCSupport
 
     module_function
 
+    # Turn a string into IRC upper case, modifying it in place.
     # @param [String] irc_string An IRC string (nickname, channel, etc).
     # @param [Symbol] casemapping An IRC casemapping.
-    # Like {#irc_upcase}, but modifies the string in place.
     # @return [String] An upper case version of the IRC string according to
     #   the casemapping.
     def irc_upcase!(irc_string, casemapping = :rfc1459)
@@ -29,6 +29,7 @@ module IRCSupport
       return irc_string
     end
 
+    # Turn a string into IRC upper case.
     # @param [String] irc_string An IRC string (nickname, channel, etc)
     # @param [Symbol] casemapping An IRC casemapping
     # @return [String] An upper case version of the IRC string according to
@@ -39,9 +40,9 @@ module IRCSupport
       return result
     end
 
+    # Turn a string into IRC lower case, modifying it in place.
     # @param [String] irc_string An IRC string (nickname, channel, etc)
     # @param [Symbol] casemapping An IRC casemapping
-    # Like {#irc_downcase}, but modifies the string in place.
     # @return [String] A lower case version of the IRC string according to
     #   the casemapping
     def irc_downcase!(irc_string, casemapping = :rfc1459)
@@ -59,6 +60,7 @@ module IRCSupport
       return irc_string
     end
 
+    # Turn a string into IRC lower case.
     # @param [String] irc_string An IRC string (nickname, channel, etc).
     # @param [Symbol] casemapping An IRC casemapping.
     # @return [String] A lower case version of the IRC string according to
@@ -69,6 +71,7 @@ module IRCSupport
       return result
     end
 
+    # Check an IRC identifier (nick, channel) for equality.
     # @param [String] first The first IRC string to compare.
     # @param [String] second The second IRC string to compare.
     # @param [Symbol] casemapping The IRC casemappig to use for the comparison.

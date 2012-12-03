@@ -81,12 +81,13 @@ module IRCSupport
     # @return [Array]
     attr_reader :capabilities
 
-    # @return [IRCSupport::Parser]
+    # @private
     def initialize
       @isupport = @@default_isupport
       @capabilities = []
     end
 
+    # Perform low-level parsing of an IRC protocol line.
     # @param [String] line An IRC protocol line you wish to decompose.
     # @return [Hash] A decomposed IRC protocol line with 3 keys:
     #   `command`, the IRC command; `prefix`, the prefix to the
@@ -107,6 +108,7 @@ module IRCSupport
       return elems
     end
 
+    # Compose an IRC protocol line.
     # @param [Hash] elems The attributes of the message (as returned
     #   by {#decompose_line}).
     # @return [String] An IRC protocol line.
@@ -134,6 +136,7 @@ module IRCSupport
       return line
     end
 
+    # Parse an IRC protocol line into a complete message object.
     # @param [String] line An IRC protocol line.
     # @return [IRCSupport::Message] A parsed message object.
     def parse(line)
@@ -205,6 +208,7 @@ module IRCSupport
       return message
     end
 
+    # CTCP-quote a message.
     # @param [String] type The CTCP type.
     # @param [String] message The text of the CTCP message.
     # @return [String] A CTCP-quoted message.

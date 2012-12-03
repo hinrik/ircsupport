@@ -2,7 +2,9 @@ module IRCSupport
   module Modes
     module_function
 
-    # @param [Array] modes The modes you want to parse.
+    # Parse mode changes.
+    # @param [Array] modes The modes you want to parse. A string of mode
+    #   changes (e.g. `'-i+k+l'`) followed by any arguments (e.g. `'secret', 25`).
     # @return [Array] Each element will be a hash with two keys: `:set`,
     #   a boolean indicating whether the mode is being set (instead of unset);
     #   and `:mode`, the mode character.
@@ -18,6 +20,7 @@ module IRCSupport
       return mode_changes
     end
 
+    # Parse channel mode changes.
     # @param [Array] modes The modes you want to parse.
     # @option opts [Hash] :chanmodes The channel modes which are allowed. This is
     #   the same as the "CHANMODES" isupport option.
@@ -66,8 +69,8 @@ module IRCSupport
       return mode_changes
     end
 
-    # @param [String] modes A string of modes you want to condense
-    #   (remove duplicates).
+    # Condense mode string by removing duplicates.
+    # @param [String] modes A string of modes you want condensed.
     # @return [Strings] A condensed mode string.
     def condense_modes(modes)
       action = nil
@@ -84,6 +87,7 @@ module IRCSupport
       return result
     end
 
+    # Calculate the difference between two mode strings.
     # @param [String] before The "before" mode string.
     # @param [String] after The "after" mode string.
     # @return [String] A modestring representing the difference between the

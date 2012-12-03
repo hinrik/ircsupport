@@ -9,6 +9,7 @@ module IRCSupport
 
     module_function
 
+    # Match strings to an IRC mask.
     # @param [String] mask The mask to match against.
     # @param [String] string The string to match against the mask.
     # @param [Symbol] casemapping The IRC casemapping to use in the match.
@@ -26,6 +27,7 @@ module IRCSupport
       return false
     end
 
+    # Match strings to multiple IRC masks.
     # @param [Array] mask The masks to match against.
     # @param [Array] strings The strings to match against the masks.
     # @param [Symbol] casemapping The IRC casemapping to use in the match.
@@ -44,6 +46,7 @@ module IRCSupport
       return results
     end
 
+    # Normalize (expand) an IRC mask.
     # @param [String] mask A partial mask (e.g. 'foo*').
     # @return [String] A normalized mask (e.g. 'foo*!*@*).
     def normalize_mask(mask)
