@@ -16,7 +16,7 @@ Gem::Specification.new do |gem|
   gem.test_files    = `git ls-files -- test/*`.split("\n")
   gem.require_path  = "lib"
   gem.has_rdoc      = "yard"
-  gem.required_ruby_version = '>= 1.9.1'
+  gem.required_ruby_version = '>= 1.9.2'
 
   gem.add_development_dependency "rake"
   gem.add_development_dependency "simplecov"
