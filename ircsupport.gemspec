@@ -20,11 +20,11 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency "rake"
   gem.add_development_dependency "simplecov"
+  gem.add_development_dependency "yard", ">= 0.7.5"
   gem.add_development_dependency "minitest", ">= 2.11.4"
   gem.add_development_dependency "turn"
 
-  if ENV['TRAVIS_BUILD'].nil?
-    gem.add_development_dependency "yard", ">= 0.7.5"
+  if RUBY_ENGINE != 'jruby'
     gem.add_development_dependency "redcarpet"
   end
 end
