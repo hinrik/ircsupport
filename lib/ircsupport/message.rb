@@ -29,27 +29,19 @@ module IRCSupport
     end
 
     class Numeric < Message
-      # @return [String] The IRC command numeric.
-      attr_accessor :numeric
-
-      # @return [String] The name of the IRC command numeric.
-      attr_accessor :numeric_name
-
-      # @return [String] The arguments to the numeric command.
-      attr_accessor :numeric_args
+      # @return [String] The name of the IRC command numeric (e.g. RPL_WELCOME).
+      attr_accessor :name
 
       # @private
       def initialize(args)
         super(args)
-        @numeric = args[:command]
-        @numeric_args = args[:args]
-        @numeric_name = IRCSupport::Numerics.numeric_to_name(@numeric)
-        @type = @numeric.to_sym
+        @name = IRCSupport::Numerics.numeric_to_name(@command)
+        @type = @command.to_sym
       end
 
       # @return [Boolean] Will be true if this is an error numeric.
       def is_error?
-        return @numeric_name =~ /^ERR/ ? true : false
+        return @name =~ /^ERR/ ? true : false
       end
     end
 

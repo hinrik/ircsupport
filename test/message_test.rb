@@ -20,7 +20,7 @@ traffic = [
       msg.args[0].must_equal 'dsfdsfdsf'
       msg.args[1].must_equal 'Welcome to the freenode Internet Relay Chat Network dsfdsfdsf'
       msg.type.must_equal :'001'
-      msg.numeric_name.must_equal 'RPL_WELCOME'
+      msg.name.must_equal 'RPL_WELCOME'
       msg.is_error?.must_equal false
     },
   ],
