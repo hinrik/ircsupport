@@ -21,7 +21,6 @@ module IRCSupport
       when :rfc1459
         irc_string.tr!(*@@rfc1459_map)
       when :'strict-rfc1459'
-        # the backslash must be last, otherwise it causes issues
         irc_string.tr!(*@@strict_rfc1459_map)
       else
         raise ArgumentError, "Unsupported casemapping #{casemapping}"
@@ -52,7 +51,6 @@ module IRCSupport
       when :rfc1459
         irc_string.tr!(*@@rfc1459_map.reverse)
       when :'strict-rfc1459'
-        # the backslash must be last, otherwise it causes issues
         irc_string.tr!(*@@strict_rfc1459_map.reverse)
       else
         raise ArgumentError, "Unsupported casemapping #{casemapping}"
