@@ -20,7 +20,7 @@ module IRCSupport
       @args = args[:args]
     end
 
-    # @return [String] The type of the IRC message.
+    # @return [Symbol] The type of the IRC message.
     def type
       return @type if @type
       return @command.downcase.to_sym if self.class.name == 'IRCSupport::Message'
@@ -583,7 +583,7 @@ module IRCSupport
     end
 
     class CTCP < Message
-      # @return [String] The type of the CTCP message.
+      # @return [Symbol] The type of the CTCP message.
       attr_accessor :ctcp_type
 
       # @return [String] The arguments to the CTCP.
