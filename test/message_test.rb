@@ -19,7 +19,7 @@ traffic = [
       msg.command.must_equal '001'
       msg.args[0].must_equal 'dsfdsfdsf'
       msg.args[1].must_equal 'Welcome to the freenode Internet Relay Chat Network dsfdsfdsf'
-      msg.type.must_equal '001'
+      msg.type.must_equal :'001'
       msg.numeric_name.must_equal 'RPL_WELCOME'
       msg.is_error?.must_equal false
     },
@@ -84,7 +84,7 @@ traffic = [
   [
     ':NickServ!NickServ@services. NOTICE dsfdsfdsf :+This nickname is registered. Please choose a different nickname, or identify via /msg NickServ identify <password>.',
     ->(msg) {
-      msg.type.must_equal 'message'
+      msg.type.must_equal :message
       msg.is_notice?.must_equal true
       msg.sender.must_equal 'NickServ!NickServ@services.'
       msg.identified?.must_equal true
@@ -128,21 +128,24 @@ traffic = [
   [
     ":literal!hinrik@w.nix.is PRIVMSG #foo4321 :\x01FOOBAR dsfdsfsdfds\x01",
     ->(msg) {
-      msg.type.must_equal 'ctcp_foobar'
+      msg.type.must_equal :ctcp_foobar
+      msg.ctcp_type.must_equal :foobar
       msg.ctcp_args.must_equal 'dsfdsfsdfds'
     },
   ],
   [
     ":literal!hinrik@w.nix.is NOTICE #foo4321 :\x01FOOBAR dsfdsfsdfds\x01",
     ->(msg) {
-      msg.type.must_equal 'ctcpreply_foobar'
+      msg.type.must_equal :ctcpreply_foobar
+      msg.ctcp_type.must_equal :foobar
       msg.ctcp_args.must_equal 'dsfdsfsdfds'
     },
   ],
   [
     ":literal!hinrik@w.nix.is PRIVMSG #foo4321 :\x01DCC FOO dsfdsfsdfds\x01",
     ->(msg) {
-      msg.type.must_equal 'dcc_foo'
+      msg.type.must_equal :dcc_foo
+      msg.dcc_type.must_equal :foo
       msg.sender.must_equal 'literal!hinrik@w.nix.is'
       msg.dcc_args.must_equal 'dsfdsfsdfds'
     },
@@ -294,7 +297,7 @@ traffic = [
   [
     'NOTICE :foo bar',
     ->(msg) {
-      msg.type.must_equal 'server_notice'
+      msg.type.must_equal :server_notice
       msg.sender.must_equal nil
       msg.target.must_equal nil
       msg.message.must_equal 'foo bar'
@@ -303,7 +306,7 @@ traffic = [
   [
     ':fooserver NOTICE AUTH :foo bar',
     ->(msg) {
-      msg.type.must_equal 'server_notice'
+      msg.type.must_equal :server_notice
       msg.sender.must_equal 'fooserver'
       msg.target.must_equal 'AUTH'
       msg.message.must_equal 'foo bar'
@@ -312,7 +315,7 @@ traffic = [
   [
     ':foo-service NOTICE :foo bar',
     ->(msg) {
-      msg.type.must_equal 'server_notice'
+      msg.type.must_equal :server_notice
       msg.sender.must_equal 'foo-service'
       msg.message.must_equal 'foo bar'
     },
@@ -321,7 +324,7 @@ traffic = [
     'CAP LS :foo -bar ~baz ~=quux',
     ->(msg) {
       msg.multipart.must_equal false
-      msg.type.must_equal 'cap_ls'
+      msg.type.must_equal :cap_ls
       msg.subcommand.must_equal 'LS'
       msg.reply.must_equal 'foo -bar ~baz ~=quux'
       msg.capabilities.must_equal({
@@ -347,7 +350,7 @@ traffic = [
   [
     ':dsfdsfdsf!~hinrik@191-108-22-46.fiber.hringdu.is MODE +i',
     ->(msg) {
-      msg.type.must_equal 'user_mode_change'
+      msg.type.must_equal :user_mode_change
       msg.mode_changes.must_equal [
         {
           mode: 'i',
@@ -359,7 +362,7 @@ traffic = [
   [
     ':dsfdsfdsf!~hinrik@191-108-22-46.fiber.hringdu.is MODE #foo4321 +tlk 300 foo',
     ->(msg) {
-      msg.type.must_equal 'channel_mode_change'
+      msg.type.must_equal :channel_mode_change
       msg.changer.must_equal 'dsfdsfdsf!~hinrik@191-108-22-46.fiber.hringdu.is'
       msg.channel.must_equal '#foo4321'
       msg.mode_changes.must_equal [
@@ -383,7 +386,7 @@ traffic = [
   [
     'FOO BAR :baz',
     ->(msg) {
-      msg.type.must_equal 'foo'
+      msg.type.must_equal :foo
       msg.prefix.must_equal nil
       msg.args.must_equal ['BAR', 'baz']
     }

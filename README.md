@@ -48,7 +48,7 @@ msg.is_action?
 # => false
 
 msg.type
-# => 'private_msg'
+# => :message
 
 IRCSupport::Validations.valid_nick_name?("Foo{}Bar[]")
 # => true

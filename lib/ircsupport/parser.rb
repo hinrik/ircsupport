@@ -193,9 +193,9 @@ module IRCSupport
 
       message = msg_const.new(elems)
 
-      if message.type == '005'
+      if message.type == :'005'
         @isupport.merge! message.isupport
-      elsif message.type == 'cap_ack'
+      elsif message.type == :cap_ack
         message.capabilities.each do |capability, options|
           if options.include?(:disable)
             @capabilities = @capabilities - [capability]

@@ -23,9 +23,9 @@ module IRCSupport
     # @return [String] The type of the IRC message.
     def type
       return @type if @type
-      return @command.downcase if self.class.name == 'IRCSupport::Message'
+      return @command.downcase.to_sym if self.class.name == 'IRCSupport::Message'
       type = self.class.name.match(/^IRCSupport::Message::(.*)/)[1]
-      return type.gsub(/::|(?<=[[:lower:]])(?=[[:upper:]])/, '_').downcase
+      return type.gsub(/::|(?<=[[:lower:]])(?=[[:upper:]])/, '_').downcase.to_sym
     end
 
     class Numeric < Message
@@ -44,7 +44,7 @@ module IRCSupport
         @numeric = args[:command]
         @numeric_args = args[:args]
         @numeric_name = IRCSupport::Numerics.numeric_to_name(@numeric)
-        @type = @numeric
+        @type = @numeric.to_sym
       end
 
       # @return [Boolean] Will be true if this is an error numeric.
@@ -194,6 +194,9 @@ module IRCSupport
       # @return [String] The sender of the DCC message.
       attr_accessor :sender
 
+      # @return [Symbol] The type of the DCC message.
+      attr_accessor :dcc_type
+
       # @return [String] The argument string to the DCC message.
       attr_accessor :dcc_args
 
@@ -202,8 +205,8 @@ module IRCSupport
         super(args)
         @sender = args[:prefix]
         @dcc_args = args[:args][1]
-        @dcc_type = args[:dcc_type]
-        @type = "dcc_#{@dcc_type.downcase}"
+        @dcc_type = args[:dcc_type].downcase.to_sym
+        @type = "dcc_#@dcc_type".to_sym
       end
     end
 
@@ -481,7 +484,7 @@ module IRCSupport
       def initialize(args)
         super(args)
         @subcommand = args[:args][0]
-        @type = "cap_#{@subcommand.downcase}"
+        @type = "cap_#{@subcommand.downcase}".to_sym
         if args[:args][1] == '*'
           @multipart = true
           @reply = args[:args][2]
@@ -588,6 +591,9 @@ module IRCSupport
     end
 
     class CTCP < Message
+      # @return [String] The type of the CTCP message.
+      attr_accessor :ctcp_type
+
       # @return [String] The arguments to the CTCP.
       attr_accessor :ctcp_args
 
@@ -596,8 +602,8 @@ module IRCSupport
         super(args)
         @sender = args[:prefix]
         @ctcp_args = args[:args][1]
-        @ctcp_type = args[:ctcp_type]
-        @type = "ctcp_#{@ctcp_type.downcase}"
+        @ctcp_type = args[:ctcp_type].downcase.to_sym
+        @type = "ctcp_#@ctcp_type".to_sym
 
         if args[:is_public]
           @channel = args[:args][0].split(/,/).first
@@ -609,7 +615,7 @@ module IRCSupport
       # @private
       def initialize(args)
         super(args)
-        @type = "ctcpreply_#{@ctcp_type.downcase}"
+        @type = "ctcpreply_#@ctcp_type".to_sym
       end
     end
   end
