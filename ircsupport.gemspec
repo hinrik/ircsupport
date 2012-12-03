@@ -21,6 +21,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "rake"
   gem.add_development_dependency "simplecov"
   gem.add_development_dependency "yard", ">= 0.7.5"
+  gem.add_development_dependency "redcarpet"
   gem.add_development_dependency "minitest", ">= 2.11.4"
   gem.add_development_dependency "turn"
 end
