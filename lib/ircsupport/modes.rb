@@ -32,12 +32,12 @@ module IRCSupport
     #   if any.
     def parse_channel_modes(modeparts, opts = {})
       chanmodes = opts[:chanmodes] || {
-        'A' => %w{b e I},
-        'B' => %w{k},
-        'C' => %w{l},
-        'D' => %w{i m n p s t a q r},
+        'A' => %w{b e I}.to_set,
+        'B' => %w{k}.to_set,
+        'C' => %w{l}.to_set,
+        'D' => %w{i m n p s t a q r}.to_set,
       }
-      statmodes = opts[:statmodes] || %w{o h v}
+      statmodes = opts[:statmodes] || %w{o h v}.to_set
 
       mode_changes = []
       modes, *args = modeparts

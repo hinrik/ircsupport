@@ -31,13 +31,13 @@ traffic = [
       msg.args[1].must_equal 'CHANTYPES=#'
       msg.args[13].must_equal 'are supported by this server'
       msg.isupport["MODES"].must_equal 4
-      msg.isupport["STATUSMSG"].must_equal %w{@ +}
-      msg.isupport["CHANTYPES"].must_equal ['#']
+      msg.isupport["STATUSMSG"].must_equal %w{@ +}.to_set
+      msg.isupport["CHANTYPES"].must_equal %w{#}.to_set
       msg.isupport["CHANMODES"].must_equal({
-        'A' => %w{e I b q},
-        'B' => ['k'],
-        'C' => %w{f l j},
-        'D' => %w{C F L M P Q c g i m n p r s t z},
+        'A' => %w{e I b q}.to_set,
+        'B' => %w{k}.to_set,
+        'C' => %w{f l j}.to_set,
+        'D' => %w{C F L M P Q c g i m n p r s t z}.to_set,
       })
       msg.isupport["CHANLIMIT"].must_equal({ '#' => 120 })
       msg.isupport["PREFIX"].must_equal({ 'o' => '@', 'v' => '+' })

@@ -46,12 +46,12 @@ module IRCSupport
     # @private
     @@default_isupport = {
       "PREFIX"    => {"o" => "@", "v" => "+"},
-      "CHANTYPES" => ["#"],
+      "CHANTYPES" => %w[#].to_set,
       "CHANMODES" => {
-        "A" => ["b"],
-        "B" => ["k"],
-        "C" => ["l"],
-        "D" => %w[i m n p s t r]
+        "A" => %w[b].to_set,
+        "B" => %w[k].to_set,
+        "C" => %w[l].to_set,
+        "D" => %w[i m n p s t r].to_set,
       },
       "MODES"       => 1,
       "NICKLEN"     => Float::INFINITY,
@@ -64,9 +64,9 @@ module IRCSupport
       "MAXTARGETS"  => 1,
       "MAXCHANNELS" => Float::INFINITY,
       "CHANLIMIT"   => {"#" => Float::INFINITY},
-      "STATUSMSG"   => ["@", "+"],
+      "STATUSMSG"   => %w[@ +].to_set,
       "CASEMAPPING" => :rfc1459,
-      "ELIST"       => [],
+      "ELIST"       => Set.new,
       "MONITOR"     => 0,
     }
 
@@ -78,13 +78,13 @@ module IRCSupport
 
     # A list of currently enabled capabilities.
     # It will be updated in response to parsed {IRCSupport::Message::CAP::ACK `CAP ACK`} messages.
-    # @return [Array]
+    # @return [Set]
     attr_reader :capabilities
 
     # @private
     def initialize
       @isupport = @@default_isupport
-      @capabilities = []
+      @capabilities = Set.new
     end
 
     # Perform low-level parsing of an IRC protocol line.

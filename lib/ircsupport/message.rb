@@ -52,7 +52,7 @@ module IRCSupport
         KICKLEN CHANNELLEN CHIDLEN SILENCE AWAYLEN
         MAXTARGETS WATCH MONITOR] => ->(v) { v.to_i },
 
-        %w[STATUSMSG ELIST CHANTYPES] => ->(v) { v.split("") },
+        %w[STATUSMSG ELIST CHANTYPES] => ->(v) { v.split("").to_set },
 
         %w[CASEMAPPING] => ->(v) { v.to_sym },
 
@@ -69,7 +69,7 @@ module IRCSupport
 
         %w[CHANMODES] => ->(v) {
           h = {}
-          h["A"], h["B"], h["C"], h["D"] = v.split(",").map {|l| l.split("")}
+          h["A"], h["B"], h["C"], h["D"] = v.split(",").map {|l| l.split("").to_set }
           h
         },
 

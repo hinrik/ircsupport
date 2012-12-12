@@ -1,3 +1,5 @@
+* Use `Set` instead of `Array` where appropriate
+
 0.2.0
 -----
 * Add missing `#ctcp_type` and `#dcc_type` accessors
