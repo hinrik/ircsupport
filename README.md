@@ -71,40 +71,40 @@ more details.
 Components
 ----------
 
-### `IRCSupport::Parser`
+### {IRCSupport::Parser `IRCSupport::Parser`}
 
 This class is a complete parser for the IRC protocol. It can provide you with
 rich objects which encapsulate all the information of a message in handy
 methods.
 
-### `IRCSupport::Case`
+### {IRCSupport::Case `IRCSupport::Case`}
 
 A module that provides functions that conversion between various IRC
 casemappings.
 
-### `IRCSupport::Encoding`
+### {IRCSupport::Encoding `IRCSupport::Encoding`}
 
 A module that provides functions to encode or decode IRC messages.
 
-### `IRCSupport::Formatting`
+### {IRCSupport::Formatting `IRCSupport::Formatting`}
 
 A module that provides functions for detecting, stripping, and constructing
 strings with IRC color and formatting codes.
 
-### `IRCSupport::Masks`
+### {IRCSupport::Masks `IRCSupport::Masks`}
 
 A module that provides functions to deal with IRC masks.
 
-### `IRCSupport::Modes`
+### {IRCSupport::Modes `IRCSupport::Modes`}
 
 A module that provides functions to work with mode strings.
 
-### `IRCSupport::Numerics`
+### {IRCSupport::Numerics `IRCSupport::Numerics`}
 
 A module that provides functions to look up the names of IRC numerics and
 vice versa.
 
-### `IRCSupport::Validations`
+### {IRCSupport::Validations `IRCSupport::Validations`}
 
 A module that provides functions to validate various IRC strings.
 
