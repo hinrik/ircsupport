@@ -3,7 +3,9 @@ require 'ircsupport/message'
 module IRCSupport
   class Parser
     # @private
-    @@eol         = '\x00\x0a\x0d'
+    @@illegal     = '\x00\x0a\x0d'
+    # @private
+    @@eol         = /\x0d?\x0a/
     # @private
     @@space       = / +/
     # @private
@@ -15,14 +17,15 @@ module IRCSupport
     # @private
     @@command     = /[a-zA-Z]+/
     # @private
-    @@irc_name    = /[^#@@eol :][^#@@eol ]*/
+    @@irc_name    = /[^#@@illegal :][^#@@illegal ]*/
     # @private
     @@irc_line    = /
       \A
       (?: : (?<prefix> #@@non_space ) #@@space )?
       (?<command> #@@numeric | #@@command )
       (?: #@@space (?<args> #@@irc_name (?: #@@space #@@irc_name )* ) )?
-      (?: #@@space : (?<trailing_arg> [^#@@eol]* ) | #@@maybe_space )?
+      (?: #@@space : (?<trailing_arg> [^#@@illegal]* ) | #@@maybe_space )?
+      #@@eol?
       \z
     /x
     # @private

@@ -15,6 +15,13 @@ describe "Parse" do
     parser.isupport["MODES"].must_equal 4
   end
 
+  it 'should allow trailing \r\n or \n' do
+    raw_rn = "#{raw_line}\x0d\x0a"
+    parser.decompose_line(raw_rn)[:command].must_equal "005"
+    raw_n = "#{raw_line}\x0a"
+    parser.decompose_line(raw_n)[:command].must_equal "005"
+  end
+
   it "should compose the server message" do
     irc_line = parser.compose_line(result)
     irc_line.must_equal raw_line

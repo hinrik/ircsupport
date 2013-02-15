@@ -1,4 +1,5 @@
 * Use `Set` instead of `Array` where appropriate
+* Allow trailing `\r\n` or `\n` in arguments to `#parse` and `#decompose_line`
 
 0.2.0   Mon Dec 3 18:27:18 2012 +0000
 -----
