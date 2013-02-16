@@ -105,7 +105,7 @@ module IRCSupport
         elems[:args].concat c[:args].split(@@space) if c[:args]
         elems[:args] << c[:trailing_arg] if c[:trailing_arg]
       else
-        raise ArgumentError, "Line is not IRC protocol: #{line}"
+        raise ArgumentError, "Line is not IRC protocol: #{line.inspect}"
       end
 
       return elems
