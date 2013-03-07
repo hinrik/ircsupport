@@ -4,6 +4,7 @@ IRCSupport
 [![Build Status](https://secure.travis-ci.org/hinrik/ircsupport.png?branch=master)](http://travis-ci.org/hinrik/ircsupport)
 [![Dependency Status](https://gemnasium.com/hinrik/ircsupport.png)](https://gemnasium.com/hinrik/ircsupport)
 [![Code Climate](https://codeclimate.com/github/hinrik/ircsupport.png)](https://codeclimate.com/github/hinrik/ircsupport)
+[![Coverage Status](https://coveralls.io/repos/hinrik/ircsupport/badge.png?branch=master)](https://coveralls.io/r/hinrik/ircsupport)
 
 IRCSupport provides everything you need to work with the IRC protocol and its
 widely-used extensions. It is meant to be a building block for higher-level
