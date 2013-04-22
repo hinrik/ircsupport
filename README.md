@@ -3,7 +3,6 @@ IRCSupport
 
 [![Gem Version](https://badge.fury.io/rb/ircsupport.png)](http://badge.fury.io/rb/ircsupport)
 [![Build Status](https://secure.travis-ci.org/hinrik/ircsupport.png?branch=master)](http://travis-ci.org/hinrik/ircsupport)
-[![Dependency Status](https://gemnasium.com/hinrik/ircsupport.png)](https://gemnasium.com/hinrik/ircsupport)
 [![Code Climate](https://codeclimate.com/github/hinrik/ircsupport.png)](https://codeclimate.com/github/hinrik/ircsupport)
 [![Coverage Status](https://coveralls.io/repos/hinrik/ircsupport/badge.png?branch=master)](https://coveralls.io/r/hinrik/ircsupport)
 
