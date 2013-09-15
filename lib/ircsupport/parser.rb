@@ -232,8 +232,8 @@ module IRCSupport
       # reply to 20 CTCP VERSIONs at a time).
       line.args[1] = ctcps.first
 
-      id = @capabilities.include?('identify-msg') ? /./ : //
-      if line.args[1].sub!(/^#{id}\KACTION /, '')
+      rx = @capabilities.include?('identify-msg') ? /(?<=^.)ACTION / : /^ACTION /
+      if line.args[1].sub!(rx, '')
         return IRCSupport::Message::Message.new(line, @isupport, @capabilities, true)
       end
 
