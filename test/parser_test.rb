@@ -5,32 +5,32 @@ require 'test_helper'
 describe "Parse" do
   parser = IRCSupport::Parser.new
   raw_line = ":pretend.dancer.server 005 CPAN MODES=4 CHANLIMIT=#:20 NICKLEN=16 USERLEN=10 HOSTLEN=63 TOPICLEN=450 KICKLEN=450 CHANNELLEN=30 KEYLEN=23 CHANTYPES=# PREFIX=(ov)@+ CASEMAPPING=ascii CAPAB IRCD=dancer :are available on this server"
-  result = parser.decompose_line(raw_line)
+  line = parser.decompose(raw_line)
   it "should parse the server message" do
-    result[:prefix].must_equal "pretend.dancer.server"
-    result[:command].must_equal "005"
-    result[:args].count.must_equal 16
-    result[:args][0].must_equal "CPAN"
-    result[:args][15].must_equal "are available on this server"
+    line.prefix.must_equal "pretend.dancer.server"
+    line.command.must_equal "005"
+    line.args.count.must_equal 16
+    line.args[0].must_equal "CPAN"
+    line.args[15].must_equal "are available on this server"
     parser.isupport["MODES"].must_equal 4
   end
 
   it 'should allow trailing \r\n or \n' do
     raw_rn = "#{raw_line}\x0d\x0a"
-    parser.decompose_line(raw_rn)[:command].must_equal "005"
+    parser.decompose(raw_rn)[:command].must_equal "005"
     raw_n = "#{raw_line}\x0a"
-    parser.decompose_line(raw_n)[:command].must_equal "005"
+    parser.decompose(raw_n)[:command].must_equal "005"
   end
 
   it "should compose the server message" do
-    irc_line = parser.compose_line(result)
+    irc_line = parser.compose(line)
     irc_line.must_equal raw_line
   end
 
   it "should fail to compose the server message" do
-    proc { parser.compose_line({}) }.must_raise ArgumentError
-    proc { parser.compose_line({ prefix: "foo" }) }.must_raise ArgumentError
-    proc { parser.compose_line({ command: "bar", args: ['a b', 'c'] }) }.must_raise ArgumentError
+    proc { parser.compose(IRCSupport::Line.new) }.must_raise ArgumentError
+    proc { parser.compose(IRCSupport::Line.new("foo")) }.must_raise ArgumentError
+    proc { parser.compose(IRCSupport::Line.new(nil, "bar", ['a b', 'c'])) }.must_raise ArgumentError
   end
 
   it "should fail to decompoes the IRC line" do
@@ -55,7 +55,7 @@ describe "CTCP" do
   end
 
   it "should handle unbalanced NULs" do
-    unbalanced = ":literal!hinrik@w.nix.is PRIVMSG #foo4321 :\x01ACTIOn jumps\x01foo\x01"
+    unbalanced = ":literal!hinrik@w.nix.is PRIVMSG #foo4321 :\x01ACTION jumps\x01foo\x01"
     msg = parser.parse(unbalanced)
     msg.message.must_equal 'jumps'
   end

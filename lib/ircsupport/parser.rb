@@ -1,6 +1,8 @@
 require 'ircsupport/message'
 
 module IRCSupport
+  Line = Struct.new(:prefix, :command, :args)
+
   class Parser
     # @private
     @@illegal     = '\x00\x0a\x0d'
@@ -91,110 +93,95 @@ module IRCSupport
     end
 
     # Perform low-level parsing of an IRC protocol line.
-    # @param [String] line An IRC protocol line you wish to decompose.
-    # @return [Hash] A decomposed IRC protocol line with 3 keys:
-    #   `command`, the IRC command; `prefix`, the prefix to the
-    #   command, if any; `args`, an array of any arguments to the command
-    def decompose_line(line)
-      if line =~ @@irc_line
+    # @param [String] raw_line An IRC protocol line you wish to decompose.
+    # @return [IRCSupport::Line] An IRC protocol line object.
+    def decompose(raw_line)
+      if raw_line =~ @@irc_line
         c = $~
-        elems = {}
-        elems[:prefix] = c[:prefix] if c[:prefix]
-        elems[:command] = c[:command].upcase
-        elems[:args] = []
-        elems[:args].concat c[:args].split(@@space) if c[:args]
-        elems[:args] << c[:trailing_arg] if c[:trailing_arg]
+        line = IRCSupport::Line.new
+        line.prefix = c[:prefix] if c[:prefix]
+        line.command = c[:command].upcase
+        line.args = []
+        line.args.concat c[:args].split(@@space) if c[:args]
+        line.args << c[:trailing_arg] if c[:trailing_arg]
       else
-        raise ArgumentError, "Line is not IRC protocol: #{line.inspect}"
-      end
-
-      return elems
-    end
-
-    # Compose an IRC protocol line.
-    # @param [Hash] elems The attributes of the message (as returned
-    #   by {#decompose_line}).
-    # @return [String] An IRC protocol line.
-    def compose_line(elems)
-      line = ''
-      line << ":#{elems[:prefix]} " if elems[:prefix]
-      if !elems[:command]
-        raise ArgumentError, "You must specify a command"
-      end
-      line << elems[:command]
-
-      if elems[:args]
-        elems[:args].each_with_index do |arg, idx|
-          line << ' '
-          if idx != elems[:args].count-1 and arg.match(@@space)
-            raise ArgumentError, "Only the last argument may contain spaces"
-          end
-          if idx == elems[:args].count-1
-            line << ':' if arg.match(@@space)
-          end
-          line << arg
-        end
+        raise ArgumentError, "Line is not IRC protocol: #{raw_line.inspect}"
       end
 
       return line
     end
 
+    # Compose an IRC protocol line.
+    # @param [IRCSupport::Line] line An IRC protocol line object
+    #   (as returned by {#decompose}).
+    # @return [String] An IRC protocol line.
+    def compose(line)
+      raise ArgumentError, "You must specify a command" if !line.command
+      raw_line = ''
+      raw_line << ":#{line.prefix} " if line.prefix
+      raw_line << line.command
+
+      if line.args
+        line.args.each_with_index do |arg, idx|
+          raw_line << ' '
+          if idx != line.args.count-1 and arg.match(@@space)
+            raise ArgumentError, "Only the last argument may contain spaces"
+          end
+          if idx == line.args.count-1
+            raw_line << ':' if arg.match(@@space)
+          end
+          raw_line << arg
+        end
+      end
+
+      return raw_line
+    end
+
     # Parse an IRC protocol line into a complete message object.
-    # @param [String] line An IRC protocol line.
+    # @param [String] raw_line An IRC protocol line.
     # @return [IRCSupport::Message] A parsed message object.
-    def parse(line)
-      elems = decompose_line(line)
-      elems[:isupport] = @isupport
-      elems[:capabilities] = @capabilities
+    def parse(raw_line)
+      line = decompose(raw_line)
 
-      if elems[:command] =~ /^(PRIVMSG|NOTICE)$/ && elems[:args][1] =~ /\x01/
-        return handle_ctcp_message(elems)
+      if line.command =~ /^(PRIVMSG|NOTICE)$/ && line.args[1] =~ /\x01/
+        return handle_ctcp_message(line)
       end
 
-      if elems[:command] =~ /^\d{3}$/
-        msg_class = "Numeric"
-      elsif elems[:command] == "MODE"
-        if @isupport['CHANTYPES'].include? elems[:args][0][0]
-          msg_class = "ChannelModeChange"
-        else
-          msg_class = "UserModeChange"
-        end
-      elsif elems[:command] == "NOTICE" && (!elems[:prefix] || elems[:prefix] !~ /!/)
-        msg_class = "ServerNotice"
-      elsif elems[:command] =~ /^(PRIVMSG|NOTICE)$/
-        msg_class = "Message"
-        elems[:is_notice] = true if elems[:command] == "NOTICE"
-        if @isupport['CHANTYPES'].include? elems[:args][0][0]
-          elems[:is_public] = true
-        end
-        if @capabilities.include?('identify-msg')
-          elems[:args][1], elems[:identified] = split_idmsg(elems[:args][1])
-        end
-      elsif elems[:command] == "CAP" && %w{LS LIST ACK}.include?(elems[:args][0])
-        msg_class = "CAP::#{elems[:args][0]}"
+      msg_class = case
+      when line.command =~ /^\d{3}$/
+        "Numeric"
+      when line.command == "MODE"
+        @isupport['CHANTYPES'].include?(line.args[0][0]) ?
+          "ChannelModeChange" : "UserModeChange"
+      when line.command == "NOTICE" && (!line.prefix || line.prefix !~ /!/)
+        "ServerNotice"
+      when line.command =~ /^(PRIVMSG|NOTICE)$/
+        "Message"
+      when line.command == "CAP" && %w{LS LIST ACK}.include?(line.args[0])
+        "CAP::#{line.args[0]}"
       else
-        msg_class = elems[:command]
+        line.command
       end
 
-      begin
+      msg_const = begin
         if msg_class == "Numeric"
           begin
-            msg_const = constantize("IRCSupport::Message::Numeric#{elems[:command]}")
+            constantize("IRCSupport::Message::Numeric#{line.command}")
           rescue
-            msg_const = constantize("IRCSupport::Message::#{msg_class}")
+            constantize("IRCSupport::Message::#{msg_class}")
           end
         else
           begin
-            msg_const = constantize("IRCSupport::Message::#{msg_class}")
+            constantize("IRCSupport::Message::#{msg_class}")
           rescue
-            msg_const = constantize("IRCSupport::Message::#{msg_class.capitalize}")
+            constantize("IRCSupport::Message::#{msg_class.capitalize}")
           end
         end
       rescue
-        msg_const = constantize("IRCSupport::Message")
+        constantize("IRCSupport::Message")
       end
 
-      message = msg_const.new(elems)
+      message = msg_const.new(line, @isupport, @capabilities)
 
       if message.type == :'005'
         @isupport.merge! message.isupport
@@ -235,69 +222,52 @@ module IRCSupport
       constant
     end
 
-    def split_idmsg(line)
-      identified, line = line.split(//, 2)
-      identified = identified == '+' ? true : false
-      return line, identified
-    end
-
-    def handle_ctcp_message(elems)
-      ctcp_type = elems[:command] == 'PRIVMSG' ? 'CTCP' : 'CTCPReply'
-      ctcps, texts = ctcp_dequote(elems[:args][1])
+    def handle_ctcp_message(line)
+      ctcp_type = line.command == 'PRIVMSG' ? 'CTCP' : 'CTCPReply'
+      ctcps, texts = ctcp_dequote(line.args[1])
 
       # We only process the first CTCP, ignoring extra CTCPs and any
       # non-CTCPs. Those who send anything in addition to that first CTCP
       # are probably up to no good (e.g. trying to flood a bot by having it
       # reply to 20 CTCP VERSIONs at a time).
-      ctcp = ctcps.first
+      line.args[1] = ctcps.first
 
-      if @capabilities.include?('identify-msg') && ctcp =~ /^.ACTION/
-        ctcp, elems[:identified] = split_idmsg(ctcp)
+      id = @capabilities.include?('identify-msg') ? /./ : //
+      if line.args[1].sub!(/^#{id}\KACTION /, '')
+        return IRCSupport::Message::Message.new(line, @isupport, @capabilities, true)
       end
 
-      if ctcp !~ /^(\w+)(?: (.*))?/
-        warn "Received malformed CTCP from #{elems[:prefix]}: #{ctcp}"
+      if line.args[1] !~ /^(\w+)(?: (.*))?/
+        warn "Received malformed CTCP from #{line.prefix}: #{line.args[1]}"
         return
       end
       ctcp_name, ctcp_args = $~.captures
 
       if ctcp_name == 'DCC'
         if ctcp_args !~ /^(\w+) +(.+)/
-          warn "Received malformed DCC request from #{elems[:prefix]}: #{ctcp}"
+          warn "Received malformed DCC request from #{line.prefix}: #{line.args[1]}"
           return
         end
         dcc_name, dcc_args = $~.captures
-        elems[:args][1] = dcc_args
-        elems[:dcc_type] = dcc_name
+        line.args[1] = dcc_args
 
-        begin
-          message_class = constantize("IRCSupport::Message::DCC::" + dcc_name.capitalize)
+        message_class = begin
+          constantize("IRCSupport::Message::DCC::" + dcc_name.capitalize)
         rescue
-          message_class = constantize("IRCSupport::Message::DCC")
+          constantize("IRCSupport::Message::DCC")
         end
 
-        return message_class.new(elems)
+        return message_class.new(line, @isupport, @capabilities, dcc_name)
       else
-        elems[:args][1] = ctcp_args || ''
+        line.args[1] = ctcp_args || ''
 
-        if @isupport['CHANTYPES'].include? elems[:args][0][0]
-          elems[:is_public] = true
-        end
-
-        # treat CTCP ACTIONs as normal messages with a special attribute
-        if ctcp_name == 'ACTION'
-          elems[:is_action] = true
-          return IRCSupport::Message::Message.new(elems)
-        end
-
-        begin
-          message_class = constantize("IRCSupport::Message::#{ctcp_type}_" + ctcp_name.capitalize)
+        message_class = begin
+          constantize("IRCSupport::Message::#{ctcp_type}_" + ctcp_name.capitalize)
         rescue
-          message_class = constantize("IRCSupport::Message::#{ctcp_type}")
+          constantize("IRCSupport::Message::#{ctcp_type}")
         end
 
-        elems[:ctcp_type] = ctcp_name
-        return message_class.new(elems)
+        return message_class.new(line, @isupport, @capabilities, ctcp_name)
       end
     end
 

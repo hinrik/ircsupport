@@ -30,7 +30,7 @@ module IRCSupport
     #   a boolean indicating whether the mode is being set (instead of unset);
     #   `:mode`, the mode character; and `:argument`, the argument to the mode,
     #   if any.
-    def parse_channel_modes(modeparts, opts = {})
+    def parse_channel_modes(modes, opts = {})
       chanmodes = opts[:chanmodes] || {
         'A' => %w{b e I}.to_set,
         'B' => %w{k}.to_set,
@@ -40,8 +40,8 @@ module IRCSupport
       statmodes = opts[:statmodes] || %w{o h v}.to_set
 
       mode_changes = []
-      modes, *args = modeparts
-      parse_modes(modes).each do |mode_change|
+      modelist, *args = modes
+      parse_modes(modelist).each do |mode_change|
         set, mode = mode_change[:set], mode_change[:mode]
         case
         when chanmodes["A"].include?(mode) || chanmodes["B"].include?(mode)

@@ -28,7 +28,7 @@ module IRCSupport
     end
 
     # Match strings to multiple IRC masks.
-    # @param [Array] mask The masks to match against.
+    # @param [Array] masks The masks to match against.
     # @param [Array] strings The strings to match against the masks.
     # @param [Symbol] casemapping The IRC casemapping to use in the match.
     # @return [Hash] Each mask that was matched will be present as a key,

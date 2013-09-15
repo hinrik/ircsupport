@@ -14,10 +14,10 @@ module IRCSupport
     attr_accessor :args
 
     # @private
-    def initialize(args)
-      @prefix = args[:prefix]
-      @command = args[:command]
-      @args = args[:args]
+    def initialize(line, isupport, capabilities)
+      @prefix = line.prefix
+      @command = line.command
+      @args = line.args
     end
 
     # @return [Symbol] The type of the IRC message.
@@ -33,8 +33,8 @@ module IRCSupport
       attr_accessor :name
 
       # @private
-      def initialize(args)
-        super(args)
+      def initialize(line, isupport, capabilities)
+        super
         @name = IRCSupport::Numerics.numeric_to_name(@command)
         @type = @command.to_sym
       end
@@ -98,10 +98,10 @@ module IRCSupport
       attr_accessor :isupport
 
       # @private
-      def initialize(args)
-        super(args)
+      def initialize(line, isupport, capabilities)
+        super
         @isupport = {}
-        args[:args].each do |value|
+        @args.each do |value|
           name, value = value.split(/=/, 2)
           if value
             proc = @@isupport_mappings.find {|key, _| key.include?(name)}
@@ -125,13 +125,13 @@ module IRCSupport
       attr_accessor :users
 
       # @private
-      def initialize(args)
-        super(args)
+      def initialize(line, isupport, capabilities)
+        super
         data = @args.last(@args.size - 1)
         @channel_type = data.shift if data[0] =~ /^[@=*]$/
         @channel = data[0]
         @users = []
-        prefixes = args[:isupport]["PREFIX"].values.map { |p| Regexp.quote p }
+        prefixes = isupport["PREFIX"].values.map { |p| Regexp.quote p }
 
         data[1].split(/\s+/).each do |user|
           user.sub! /^(#{prefixes.join '|'})/, ''
@@ -170,8 +170,8 @@ module IRCSupport
       attr_accessor :realname
 
       # @private
-      def initialize(args)
-        super(args)
+      def initialize(line, isupport, capabilities)
+        super
         @target, @username, @hostname, @server, @nickname, status, rest =
           @args.last(@args.size - 1)
         status.sub! /[GH]/, ''
@@ -193,11 +193,11 @@ module IRCSupport
       attr_accessor :dcc_args
 
       # @private
-      def initialize(args)
-        super(args)
-        @sender = args[:prefix]
-        @dcc_args = args[:args][1]
-        @dcc_type = args[:dcc_type].downcase.to_sym
+      def initialize(line, isupport, capabilities, dcc_type)
+        super(line, isupport, capabilities)
+        @sender = @prefix
+        @dcc_args = @args[1]
+        @dcc_type = dcc_type.downcase.to_sym
         @type = "dcc_#@dcc_type".to_sym
       end
     end
@@ -210,8 +210,8 @@ module IRCSupport
       attr_accessor :port
 
       # @private
-      def initialize(args)
-        super(args)
+      def initialize(line, isupport, capabilities, dcc_type)
+        super
         return if @dcc_args !~ /^(?:".+"|[^ ]+) +(\d+) +(\d+)/
         @address = IPAddr.new($1.to_i, Socket::AF_INET)
         @port = $2.to_i
@@ -232,8 +232,8 @@ module IRCSupport
       attr_accessor :size
 
       # @private
-      def initialize(args)
-        super(args)
+      def initialize(line, isupport, capabilities, dcc_type)
+        super
         return if @dcc_args !~ /^(".+"|[^ ]+) +(\d+) +(\d+)(?: +(\d+))?/
         @filename = $1
         @address = IPAddr.new($2.to_i, Socket::AF_INET)
@@ -260,8 +260,8 @@ module IRCSupport
       attr_accessor :position
 
       # @private
-      def initialize(args)
-        super(args)
+      def initialize(line, isupport, capabilities, dcc_type)
+        super
         return if @dcc_args !~ /^(".+"|[^ ]+) +(\d+) +(\d+)/
         @filename = $1
         @port = $2.to_i
@@ -283,9 +283,9 @@ module IRCSupport
       attr_accessor :error
 
       # @private
-      def initialize(args)
-        super(args)
-        @error = args[:args][0]
+      def initialize(line, isupport, capabilities)
+        super
+        @error = @args[0]
       end
     end
 
@@ -297,10 +297,10 @@ module IRCSupport
       attr_accessor :channel
 
       # @private
-      def initialize(args)
-        super(args)
-        @inviter = args[:prefix]
-        @channel = args[:args][1]
+      def initialize(line, isupport, capabilities)
+        super
+        @inviter = @prefix
+        @channel = @args[1]
       end
     end
 
@@ -312,10 +312,10 @@ module IRCSupport
       attr_accessor :channel
 
       # @private
-      def initialize(args)
-        super(args)
-        @joiner = args[:prefix]
-        @channel = args[:args][0]
+      def initialize(line, isupport, capabilities)
+        super
+        @joiner = @prefix
+        @channel = @args[0]
       end
     end
 
@@ -330,11 +330,11 @@ module IRCSupport
       attr_accessor :message
 
       # @private
-      def initialize(args)
-        super(args)
-        @parter = args[:prefix]
-        @channel = args[:args][0]
-        @message = args[:args][1]
+      def initialize(line, isupport, capabilities)
+        super
+        @parter = @prefix
+        @channel = @args[0]
+        @message = @args[1]
         @message = nil if @message && @message.empty?
       end
     end
@@ -353,12 +353,12 @@ module IRCSupport
       attr_accessor :message
 
       # @private
-      def initialize(args)
-        super(args)
-        @kicker = args[:prefix]
-        @channel = args[:args][0]
-        @kickee = args[:args][1]
-        @message = args[:args][2]
+      def initialize(line, isupport, capabilities)
+        super
+        @kicker = @prefix
+        @channel = @args[0]
+        @kickee = @args[1]
+        @message = @args[2]
         @message = nil if @message && @message.empty?
       end
     end
@@ -369,9 +369,9 @@ module IRCSupport
       attr_accessor :mode_changes
 
       # @private
-      def initialize(args)
-        super(args)
-        @mode_changes = IRCSupport::Modes.parse_modes(args[:args][0])
+      def initialize(line, isupport, capabilities)
+        super
+        @mode_changes = IRCSupport::Modes.parse_modes(@args[0])
       end
     end
 
@@ -387,14 +387,14 @@ module IRCSupport
       attr_accessor :mode_changes
 
       # @private
-      def initialize(args)
-        super(args)
-        @changer = args[:prefix]
-        @channel = args[:args][0]
+      def initialize(line, isupport, capabilities)
+        super
+        @changer = @prefix
+        @channel = @args[0]
         @mode_changes = IRCSupport::Modes.parse_channel_modes(
-          args[:args].last(args[:args].size - 1),
-          chanmodes: args[:isupport]["CHANMODES"],
-          statmodes: args[:isupport]["PREFIX"].keys,
+          @args.last(@args.size - 1),
+          chanmodes: isupport["CHANMODES"],
+          statmodes: isupport["PREFIX"].keys,
         )
       end
     end
@@ -407,10 +407,10 @@ module IRCSupport
       attr_accessor :nickname
 
       # @private
-      def initialize(args)
-        super(args)
-        @changer = args[:prefix]
-        @nickname = args[:args][0]
+      def initialize(line, isupport, capabilities)
+        super
+        @changer = @prefix
+        @nickname = @args[0]
       end
     end
 
@@ -425,11 +425,11 @@ module IRCSupport
       attr_accessor :topic
 
       # @private
-      def initialize(args)
-        super(args)
-        @changer = args[:prefix]
-        @channel = args[:args][0]
-        @topic = args[:args][1]
+      def initialize(line, isupport, capabilities)
+        super
+        @changer = @prefix
+        @channel = @args[0]
+        @topic = @args[1]
         @topic = nil if @topic && @topic.empty?
       end
     end
@@ -442,10 +442,10 @@ module IRCSupport
       attr_accessor :message
 
       # @private
-      def initialize(args)
-        super(args)
-        @quitter = args[:prefix]
-        @message = args[:args][0]
+      def initialize(line, isupport, capabilities)
+        super
+        @quitter = @prefix
+        @message = @args[0]
         @message = nil if @message && @message.empty?
       end
     end
@@ -455,9 +455,9 @@ module IRCSupport
       attr_accessor :message
 
       # @private
-      def initialize(args)
-        super(args)
-        @message = args[:args][0]
+      def initialize(line, isupport, capabilities)
+        super
+        @message = @args[0]
         @message = nil if @message && @message.empty?
       end
     end
@@ -473,16 +473,16 @@ module IRCSupport
       attr_accessor :reply
 
       # @private
-      def initialize(args)
-        super(args)
-        @subcommand = args[:args][0]
+      def initialize(line, isupport, capabilities)
+        super
+        @subcommand = @args[0]
         @type = "cap_#{@subcommand.downcase}".to_sym
-        if args[:args][1] == '*'
+        if @args[1] == '*'
           @multipart = true
-          @reply = args[:args][2]
+          @reply = @args[2]
         else
           @multipart = false
-          @reply = args[:args][1]
+          @reply = @args[1]
         end
       end
     end
@@ -501,8 +501,8 @@ module IRCSupport
       }
 
       # @private
-      def initialize(args)
-        super(args)
+      def initialize(line, isupport, capabilities)
+        super
         @capabilities = {}
 
         reply.split.each do |chunk|
@@ -533,14 +533,14 @@ module IRCSupport
       attr_accessor :message
 
       # @private
-      def initialize(args)
-        super(args)
-        @sender = args[:prefix]
-        if args[:args].size == 2
-          @target = args[:args][0]
-          @message = args[:args][1]
+      def initialize(line, isupport, capabilities)
+        super
+        @sender = @prefix
+        if @args.size == 2
+          @target = @args[0]
+          @message = @args[1]
         else
-          @message = args[:args][0]
+          @message = @args[0]
         end
       end
     end
@@ -557,20 +557,23 @@ module IRCSupport
       attr_accessor :channel
 
       # @private
-      def initialize(args)
-        super(args)
-        @sender = args[:prefix]
-        @message = args[:args][1]
-        @is_action = args[:is_action] || false
-        @is_notice = args[:is_notice] || false
+      def initialize(line, isupport, capabilities, is_action = false)
+        super(line, isupport, capabilities)
 
-        if args[:is_public]
+        @sender = @prefix
+        @message = @args[1]
+        @is_action = is_action
+        @is_notice = true if @command == "NOTICE"
+        @is_public = true if isupport['CHANTYPES'].include?(@args[0][0])
+
+        if @is_public
           # broadcast messages are so 90s
-          @channel = args[:args][0].split(/,/).first
+          @channel = @args[0].split(/,/).first
         end
 
-        if args[:capabilities].include?('identify-msg')
-          @identified = args[:identified]
+        if capabilities.include?('identify-msg')
+          @identified, @message = @message.split(//, 2)
+          @identified = @identified == '+' ? true : false
           def self.identified?; @identified; end
         end
       end
@@ -590,23 +593,23 @@ module IRCSupport
       attr_accessor :ctcp_args
 
       # @private
-      def initialize(args)
-        super(args)
-        @sender = args[:prefix]
-        @ctcp_args = args[:args][1]
-        @ctcp_type = args[:ctcp_type].downcase.to_sym
+      def initialize(line, isupport, capabilities, ctcp_type)
+        super(line, isupport, capabilities)
+        @sender = @prefix
+        @ctcp_args = @args[1]
+        @ctcp_type = ctcp_type.downcase.to_sym
         @type = "ctcp_#@ctcp_type".to_sym
 
-        if args[:is_public]
-          @channel = args[:args][0].split(/,/).first
+        if @is_public
+          @channel = @args[0].split(/,/).first
         end
       end
     end
 
     class CTCPReply < CTCP
       # @private
-      def initialize(args)
-        super(args)
+      def initialize(line, isupport, capabilities, ctcp_type)
+        super
         @type = "ctcpreply_#@ctcp_type".to_sym
       end
     end

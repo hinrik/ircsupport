@@ -1,6 +1,7 @@
 * Use `Set` instead of `Array` where appropriate
-* Allow trailing `\r\n` or `\n` in arguments to `#parse` and `#decompose_line`
+* Allow trailing `\r\n` or `\n` in arguments to `#parse` and `#decompose`
 * Call `#inspect` on unsupported protocol lines
+* Used a struct to represent IRC protocol lines and simplified some code
 
 0.2.0   Mon Dec 3 18:27:18 2012 +0000
 -----
