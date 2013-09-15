@@ -209,6 +209,8 @@ module IRCSupport
       '501' => 'ERR_UMODEUNKNOWNFLAG',  # RFC1459
       '502' => 'ERR_USERSDONTMATCH',    # RFC1459
       '503' => 'ERR_GHOSTEDCLIENT',     # Hybrid
+      '670' => 'RPL_STARTTLS',          # tls extension
+      '691' => 'ERR_STARTTLS',          # tls extension
       '730' => 'RPL_MONONLINE',         # ratbox
       '731' => 'RPL_MONOFFLINE',        # ratbox
       '732' => 'RPL_MONLIST',           # ratbox

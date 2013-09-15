@@ -3,6 +3,7 @@
 * Call `#inspect` on unsupported protocol lines
 * Used a struct to represent IRC protocol lines and simplified some code
 * Support multi-prefix NAMES/WHO replies
+* Document STARTTLS numerics
 
 0.2.0   Mon Dec 3 18:27:18 2012 +0000
 -----
