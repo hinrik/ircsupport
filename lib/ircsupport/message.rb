@@ -120,8 +120,8 @@ module IRCSupport
       # @return [String] The channel type.
       attr_accessor :channel_type
 
-      # @return [Array] Each element is an array of two elements: the user
-      #   prefix (if any), and the name of the user.
+      # @return [Hash] The key is a username, the value is an array of that
+      #   user's prefixes.
       attr_accessor :users
 
       # @private
@@ -130,12 +130,12 @@ module IRCSupport
         data = @args.last(@args.size - 1)
         @channel_type = data.shift if data[0] =~ /^[@=*]$/
         @channel = data[0]
-        @users = []
+        @users = {}
         prefixes = isupport["PREFIX"].values.map { |p| Regexp.quote p }
 
         data[1].split(/\s+/).each do |user|
-          user.sub! /^(#{prefixes.join '|'})/, ''
-          @users.push [$1, user]
+          user.sub! /^((?:#{prefixes.join '|'})*)/, ''
+          @users[user] = $1.split(//)
         end
       end
     end

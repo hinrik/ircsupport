@@ -61,21 +61,22 @@ traffic = [
     },
   ],
   [
-    ':adams.freenode.net 353 dsfdsfdsf @ #foo4321 :dsfdsfdsf @literal',
+    ':adams.freenode.net 353 dsfdsfdsf @ #foo4321 :dsfdsfdsf @+literal',
     ->(msg) {
       msg.channel.must_equal '#foo4321'
       msg.channel_type.must_equal '@'
-      msg.users.must_equal [[nil, 'dsfdsfdsf'], %w{@ literal}]
+      msg.users.must_equal({ 'dsfdsfdsf' => [], 'literal' => %w{@ +} })
     },
   ],
   [
-    ':adams.freenode.net 352 dsfdsfdsf #foo4321 ~hinrik 191-108-22-46.fiber.hringdu.is adams.freenode.net dsfdsfdsf H :0 Hinrik Örn Sigurðsson',
+    ':adams.freenode.net 352 dsfdsfdsf #foo4321 ~hinrik 191-108-22-46.fiber.hringdu.is adams.freenode.net dsfdsfdsf H@+ :0 Hinrik Örn Sigurðsson',
     ->(msg) {
       msg.target.must_equal '#foo4321'
       msg.username.must_equal '~hinrik'
       msg.hostname.must_equal '191-108-22-46.fiber.hringdu.is'
       msg.server.must_equal 'adams.freenode.net'
       msg.nickname.must_equal 'dsfdsfdsf'
+      msg.prefixes.must_equal %w{@ +}
       msg.away.must_equal false
       msg.hops.must_equal 0
       msg.realname.must_equal 'Hinrik Örn Sigurðsson'
