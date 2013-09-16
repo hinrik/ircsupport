@@ -1,6 +1,4 @@
 require 'ircsupport/numerics'
-require 'ipaddr'
-require 'pathname'
 
 module IRCSupport
   class Message
@@ -212,9 +210,11 @@ module IRCSupport
       # @private
       def initialize(line, isupport, capabilities, dcc_type)
         super
-        return if @dcc_args !~ /^(?:".+"|[^ ]+) +(\d+) +(\d+)/
-        @address = IPAddr.new($1.to_i, Socket::AF_INET)
-        @port = $2.to_i
+        return if @dcc_args !~ /^(?:".+"|[^ ]+) +(\S+) +(\d+)/
+        @address, @port = $1, $2.to_i
+        if @address =~ /^\d+$/
+          @address = [24, 16, 8, 0].collect {|b| (@address.to_i >> b) & 255}.join('.')
+        end
       end
     end
 
@@ -225,7 +225,7 @@ module IRCSupport
       # @return [Fixnum] The sender's port number.
       attr_accessor :port
 
-      # @return [Pathname] The source filename.
+      # @return [String] The source filename.
       attr_accessor :filename
 
       # @return [Fixnum] The size of the source file, in bytes.
@@ -234,9 +234,9 @@ module IRCSupport
       # @private
       def initialize(line, isupport, capabilities, dcc_type)
         super
-        return if @dcc_args !~ /^(".+"|[^ ]+) +(\d+) +(\d+)(?: +(\d+))?/
+        return if @dcc_args !~ /^(".+"|[^ ]+) +(\S+) +(\d+)(?: +(\d+))?/
         @filename = $1
-        @address = IPAddr.new($2.to_i, Socket::AF_INET)
+        @address = $2
         @port = $3.to_i
         @size = $4.to_i
 
@@ -245,12 +245,14 @@ module IRCSupport
           @filename.gsub!(/\\"/, '"');
         end
 
-        @filename = Pathname.new(@filename).basename
+        if @address =~ /^\d+$/
+          @address = [24, 16, 8, 0].collect {|b| (@address.to_i >> b) & 255}.join('.')
+        end
       end
     end
 
     class DCC::Accept < DCC
-      # @return [Pathname] The source filename.
+      # @return [String] The source filename.
       attr_accessor :filename
 
       # @return [Fixnum] The sender's port number.
@@ -271,8 +273,6 @@ module IRCSupport
           @filename.gsub!(/^"|"$/, '')
           @filename.gsub!(/\\"/, '"');
         end
-
-        @filename = Pathname.new(@filename).basename
       end
     end
 

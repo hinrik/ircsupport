@@ -154,15 +154,15 @@ traffic = [
   [
     ":literal!hinrik@w.nix.is PRIVMSG #foo4321 :\x01DCC CHAT dummy 3232246293 12345\x01",
     ->(msg) {
-      msg.address.must_equal IPAddr.new(3232246293, Socket::AF_INET)
+      msg.address.must_equal "192.168.42.21"
       msg.port.must_equal 12345
     },
   ],
   [
     ":literal!hinrik@w.nix.is PRIVMSG #foo4321 :\x01DCC SEND foobar.txt 3232246293 12345 5000\x01",
     ->(msg) {
-      msg.filename.must_equal Pathname.new('foobar.txt')
-      msg.address.must_equal IPAddr.new(3232246293, Socket::AF_INET)
+      msg.filename.must_equal 'foobar.txt'
+      msg.address.must_equal "192.168.42.21"
       msg.port.must_equal 12345
       msg.size.must_equal 5000
     },
@@ -170,8 +170,8 @@ traffic = [
   [
     %Q{:literal!hinrik@w.nix.is PRIVMSG #foo4321 :\x01DCC SEND "foo and bar.txt" 3232246293 12345 5000\x01},
     ->(msg) {
-      msg.filename.must_equal Pathname.new('foo and bar.txt')
-      msg.address.must_equal IPAddr.new(3232246293, Socket::AF_INET)
+      msg.filename.must_equal 'foo and bar.txt'
+      msg.address.must_equal "192.168.42.21"
       msg.port.must_equal 12345
       msg.size.must_equal 5000
     },
@@ -179,7 +179,7 @@ traffic = [
   [
     %Q{:literal!hinrik@w.nix.is PRIVMSG #foo4321 :\x01DCC ACCEPT "foo and bar.txt" 12345 1000\x01},
     ->(msg) {
-      msg.filename.must_equal Pathname.new('foo and bar.txt')
+      msg.filename.must_equal 'foo and bar.txt'
       msg.port.must_equal 12345
       msg.position.must_equal 1000
     },

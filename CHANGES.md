@@ -4,6 +4,7 @@
 * Used a struct to represent IRC protocol lines and simplified some code
 * Support multi-prefix NAMES/WHO replies
 * Document STARTTLS numerics
+* Support plaintext IPv4/v6 addresses in DCC
 
 0.2.0   Mon Dec 3 18:27:18 2012 +0000
 -----
