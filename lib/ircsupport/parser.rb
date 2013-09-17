@@ -1,9 +1,17 @@
 require 'ircsupport/message'
 
 module IRCSupport
-  Line = Struct.new(:prefix, :command, :args)
+  Line = Struct.new(:tags, :prefix, :command, :args)
 
   class Parser
+    # @private
+    @@hostname    = /[-a-zA-Z0-9.]+/
+    # @private
+    @@key         = /[-a-zA-z0-9]+/
+    # @private
+    @@value       = /[^ ;\x00\x07\x0a\x0d]+/
+    # @private
+    @@tag         = %r{ (?:#@@hostname/)? #@@key (?:=#@@value)? }x
     # @private
     @@illegal     = '\x00\x0a\x0d'
     # @private
@@ -23,6 +31,7 @@ module IRCSupport
     # @private
     @@irc_line    = /
       \A
+      (?: @ (?<tags> #@@tag (?: ;#@@tag )* ) #@@space )?
       (?: : (?<prefix> #@@non_space ) #@@space )?
       (?<command> #@@numeric | #@@command )
       (?: #@@space (?<args> #@@irc_name (?: #@@space #@@irc_name )* ) )?
@@ -99,6 +108,19 @@ module IRCSupport
       if raw_line =~ @@irc_line
         c = $~
         line = IRCSupport::Line.new
+
+        if c[:tags]
+          line.tags = {}
+          c[:tags].split(/;/).each do |tag|
+            key, value = tag.split(/=/)
+            if value
+              line.tags[key] = value
+            else
+              line.tags[key] = true
+            end
+          end
+        end
+
         line.prefix = c[:prefix] if c[:prefix]
         line.command = c[:command].upcase
         line.args = []

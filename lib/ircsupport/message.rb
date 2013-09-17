@@ -2,6 +2,9 @@ require 'ircsupport/numerics'
 
 module IRCSupport
   class Message
+    # @return [Hash] The tags associated with the message, if any.
+    attr_accessor :tags
+
     # @return [String] The sender prefix of the IRC message, if any.
     attr_accessor :prefix
 
@@ -13,6 +16,7 @@ module IRCSupport
 
     # @private
     def initialize(line, isupport, capabilities)
+      @tags = line.tags
       @prefix = line.prefix
       @command = line.command
       @args = line.args

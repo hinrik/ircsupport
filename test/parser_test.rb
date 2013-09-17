@@ -22,18 +22,30 @@ describe "Parse" do
     parser.decompose(raw_n)[:command].must_equal "005"
   end
 
+  it 'should parse tags' do
+    raw_tags = "@foo=bar;hlagh.com/quux=what;hello/hi;no #{raw_line}"
+    tag_line = parser.decompose(raw_tags)
+    tag_line.tags.must_equal({
+      'foo' => 'bar',
+      'hlagh.com/quux' => 'what',
+      'hello/hi' => true,
+      'no' => true,
+    })
+  end
+
   it "should compose the server message" do
     irc_line = parser.compose(line)
     irc_line.must_equal raw_line
   end
 
   it "should fail to compose the server message" do
-    proc { parser.compose(IRCSupport::Line.new) }.must_raise ArgumentError
-    proc { parser.compose(IRCSupport::Line.new("foo")) }.must_raise ArgumentError
-    proc { parser.compose(IRCSupport::Line.new(nil, "bar", ['a b', 'c'])) }.must_raise ArgumentError
+    fail_line = IRCSupport::Line.new
+    proc { parser.compose(fail_line) }.must_raise ArgumentError
+    fail_line.prefix = "foo"
+    proc { parser.compose(fail_line) }.must_raise ArgumentError
   end
 
-  it "should fail to decompoes the IRC line" do
+  it "should fail to decompose the IRC line" do
     proc { parser.parse("+") }.must_raise ArgumentError
   end
 end

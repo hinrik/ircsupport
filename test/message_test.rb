@@ -113,6 +113,13 @@ traffic = [
     },
   ],
   [
+    '@foo.com/bar=baz :literal!hinrik@w.nix.is PRIVMSG #foo4321 :+dsfdsfsdfds',
+    ->(msg) {
+      msg.identified?.must_equal true
+      msg.tags['foo.com/bar'].must_equal 'baz'
+    },
+  ],
+  [
     ":literal!hinrik@w.nix.is PRIVMSG #foo4321 :\x01-ACTION dsfdsfsdfds\x01",
     ->(msg) {
       msg.identified?.must_equal false
