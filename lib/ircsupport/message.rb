@@ -255,6 +255,7 @@ module IRCSupport
 
         if @filename =~ /^"/
           @filename.gsub!(/^"|"$/, '')
+          @filename.gsub!(/\\\\/, '\\');
           @filename.gsub!(/\\"/, '"');
         end
 
@@ -284,6 +285,7 @@ module IRCSupport
 
         if @filename =~ /^"/
           @filename.gsub!(/^"|"$/, '')
+          @filename.gsub!(/\\\\/, '\\');
           @filename.gsub!(/\\"/, '"');
         end
       end

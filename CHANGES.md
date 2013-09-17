@@ -6,6 +6,7 @@
 * Document STARTTLS numerics
 * Support plaintext IPv4/v6 addresses in DCC
 * Support extended-join
+* Unescape backslashes in DCC filenames
 
 0.2.0   Mon Dec 3 18:27:18 2012 +0000
 -----
