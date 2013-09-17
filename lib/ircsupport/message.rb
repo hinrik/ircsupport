@@ -21,7 +21,11 @@ module IRCSupport
     # @return [Symbol] The type of the IRC message.
     def type
       return @type if @type
+
+      # messages without their own subclass just use the IRC command name
       return @command.downcase.to_sym if self.class.name == 'IRCSupport::Message'
+
+      # if it's a subclass, default to a name based on the class name
       type = self.class.name.match(/^IRCSupport::Message::(.*)/)[1]
       return type.gsub(/::|(?<=[[:lower:]])(?=[[:upper:]])/, '_').downcase.to_sym
     end
