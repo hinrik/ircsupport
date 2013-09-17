@@ -117,6 +117,7 @@ traffic = [
     ->(msg) {
       msg.identified?.must_equal false
       msg.message.must_equal 'dsfdsfsdfds'
+      msg.public?.must_equal true
     },
   ],
   [

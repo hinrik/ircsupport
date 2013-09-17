@@ -584,9 +584,9 @@ module IRCSupport
         super
         @sender = @prefix
         @message = @args[1]
-        @is_public = true if isupport['CHANTYPES'].include?(@args[0][0])
 
-        if @is_public
+        if isupport['CHANTYPES'].include?(@args[0][0])
+          @public = true
           # broadcast messages are so 90s
           @channel = @args[0].split(/,/).first
         end
@@ -596,6 +596,8 @@ module IRCSupport
           @identified = @identified == '+' ? true : false
           def self.identified?; !!@identified; end
         end
+
+        def self.public?; !!@public; end
       end
     end
 
@@ -611,14 +613,9 @@ module IRCSupport
       # @private
       def initialize(line, isupport, capabilities, ctcp_type)
         super(line, isupport, capabilities)
-        @sender = @prefix
         @ctcp_args = @args[1]
         @ctcp_type = ctcp_type.downcase.to_sym
         @subtype = @ctcp_type
-
-        if @is_public
-          @channel = @args[0].split(/,/).first
-        end
       end
     end
 
