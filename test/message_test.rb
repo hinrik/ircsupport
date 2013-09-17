@@ -115,6 +115,7 @@ traffic = [
     ":literal!hinrik@w.nix.is PRIVMSG #foo4321 :\x01-ACTION dsfdsfsdfds\x01",
     ->(msg) {
       msg.identified?.must_equal false
+      msg.message.must_equal 'dsfdsfsdfds'
     },
   ],
   [
