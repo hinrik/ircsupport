@@ -23,9 +23,7 @@ Features
  * DCC (CHAT, SEND, ACCEPT, RESUME)
  * RPL\_ISUPPORT (draft-brocklesby-irc-isupport-03)
  * mIRC/ECMA-48/RGB color and formatting codes
- * [IRCv3 standards](http://ircv3.org/)
-   * Capability negotiation (CAP)
-   * `multi-prefix` extension
+ * [IRCv3.1 standards](http://ircv3.org/)
 * __Tested:__ A heavy emphasis is placed on testing the code. It generally
   has 100% test coverage.
 * __Flexible:__ The tools provided by IRCSupport are flexible and modular,

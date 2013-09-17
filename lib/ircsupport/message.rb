@@ -329,6 +329,15 @@ module IRCSupport
         super
         @joiner = @prefix
         @channel = @args[0]
+
+        if capabilities.include?('extended-join')
+          @account = @args[1] if @args[1] != '*'
+          @realname = @args[2]
+          def self.account; @account; end
+          def self.account=(account); @account = account; end
+          def self.realname; @realname; end
+          def self.realname=(realname); @realname = realname; end
+        end
       end
     end
 

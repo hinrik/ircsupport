@@ -5,10 +5,11 @@ require 'ipaddr'
 
 traffic = [
   [
-    'CAP ACK :identify-msg',
+    'CAP ACK :identify-msg extended-join',
     ->(msg) {
       msg.capabilities.must_equal({
-        "identify-msg" => [:enable]
+        "identify-msg" => [:enable],
+        "extended-join" => [:enable],
       })
     }
   ],
@@ -183,10 +184,12 @@ traffic = [
     },
   ],
   [
-    ':dsfdsfdsf!~hinrik@191-108-22-46.fiber.hringdu.is JOIN #foo4321',
+    ':dsfdsfdsf!~hinrik@191-108-22-46.fiber.hringdu.is JOIN #foo4321 * :Hinrik Örn Sigurðsson',
     ->(msg) {
       msg.joiner.must_equal 'dsfdsfdsf!~hinrik@191-108-22-46.fiber.hringdu.is'
       msg.channel.must_equal '#foo4321'
+      msg.account.must_equal nil
+      msg.realname.must_equal 'Hinrik Örn Sigurðsson'
     },
   ],
   [
