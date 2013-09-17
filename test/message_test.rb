@@ -85,8 +85,7 @@ traffic = [
   [
     ':NickServ!NickServ@services. NOTICE dsfdsfdsf :+This nickname is registered. Please choose a different nickname, or identify via /msg NickServ identify <password>.',
     ->(msg) {
-      msg.type.must_equal :message
-      msg.is_notice?.must_equal true
+      msg.type.must_equal :notice
       msg.sender.must_equal 'NickServ!NickServ@services.'
       msg.identified?.must_equal true
       msg.message.must_equal 'This nickname is registered. Please choose a different nickname, or identify via /msg NickServ identify <password>.'
@@ -116,14 +115,12 @@ traffic = [
     ":literal!hinrik@w.nix.is PRIVMSG #foo4321 :\x01-ACTION dsfdsfsdfds\x01",
     ->(msg) {
       msg.identified?.must_equal false
-      msg.is_action?.must_equal true
     },
   ],
   [
     ":literal!hinrik@w.nix.is PRIVMSG #foo4321 :\x01+ACTION dsfdsfsdfds\x01",
     ->(msg) {
       msg.identified?.must_equal true
-      msg.is_action?.must_equal true
     },
   ],
   [

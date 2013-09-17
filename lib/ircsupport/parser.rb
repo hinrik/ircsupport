@@ -149,43 +149,35 @@ module IRCSupport
 
       msg_class = case
       when line.command =~ /^\d{3}$/
-        "Numeric"
-      when line.command == "MODE"
-        @isupport['CHANTYPES'].include?(line.args[0][0]) ?
-          "ChannelModeChange" : "UserModeChange"
-      when line.command == "NOTICE" && (!line.prefix || line.prefix !~ /!/)
-        "ServerNotice"
-      when line.command =~ /^(PRIVMSG|NOTICE)$/
-        "Message"
-      when line.command == "CAP" && %w{LS LIST ACK}.include?(line.args[0])
-        "CAP::#{line.args[0]}"
-      else
-        line.command
-      end
-
-      msg_const = begin
-        if msg_class == "Numeric"
-          begin
-            constantize("IRCSupport::Message::Numeric#{line.command}")
-          rescue
-            constantize("IRCSupport::Message::#{msg_class}")
-          end
-        else
-          begin
-            constantize("IRCSupport::Message::#{msg_class}")
-          rescue
-            constantize("IRCSupport::Message::#{msg_class.capitalize}")
-          end
+        begin
+          constantize("IRCSupport::Message::Numeric#{line.command}")
+        rescue
+          constantize("IRCSupport::Message::Numeric")
         end
-      rescue
-        constantize("IRCSupport::Message")
+      when line.command == "MODE"
+        if @isupport['CHANTYPES'].include?(line.args[0][0])
+          constantize("IRCSupport::Message::ChannelModeChange")
+        else
+          constantize("IRCSupport::Message::UserModeChange")
+        end
+      when line.command == "NOTICE" && (!line.prefix || line.prefix !~ /!/)
+        constantize("IRCSupport::Message::ServerNotice")
+      when line.command == "CAP" && %w{LS LIST ACK}.include?(line.args[0])
+        constantize("IRCSupport::Message::CAP::#{line.args[0]}")
+      else
+        begin
+          constantize("IRCSupport::Message::#{line.command.capitalize}")
+        rescue
+          constantize("IRCSupport::Message")
+        end
       end
 
-      message = msg_const.new(line, @isupport, @capabilities)
+      message = msg_class.new(line, @isupport, @capabilities)
 
-      if message.type == :'005'
+      case message.type
+      when :'005'
         @isupport.merge! message.isupport
-      elsif message.type == :cap_ack
+      when :cap_ack
         message.capabilities.each do |capability, options|
           if options.include?(:disable)
             @capabilities = @capabilities - [capability]
@@ -234,7 +226,7 @@ module IRCSupport
 
       rx = @capabilities.include?('identify-msg') ? /(?<=^.)ACTION / : /^ACTION /
       if line.args[1].sub!(rx, '')
-        return IRCSupport::Message::Message.new(line, @isupport, @capabilities, true)
+        return IRCSupport::Message::CTCP::Action.new(line, @isupport, @capabilities)
       end
 
       if line.args[1] !~ /^(\w+)(?: (.*))?/

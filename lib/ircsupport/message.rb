@@ -558,7 +558,7 @@ module IRCSupport
       end
     end
 
-    class Message < Message
+    class Privmsg < Message
       # @return [String] The user who sent the message.
       attr_accessor :sender
 
@@ -570,13 +570,10 @@ module IRCSupport
       attr_accessor :channel
 
       # @private
-      def initialize(line, isupport, capabilities, is_action = false)
-        super(line, isupport, capabilities)
-
+      def initialize(line, isupport, capabilities)
+        super
         @sender = @prefix
         @message = @args[1]
-        @is_action = is_action
-        @is_notice = true if @command == "NOTICE"
         @is_public = true if isupport['CHANTYPES'].include?(@args[0][0])
 
         if @is_public
@@ -587,18 +584,14 @@ module IRCSupport
         if capabilities.include?('identify-msg')
           @identified, @message = @message.split(//, 2)
           @identified = @identified == '+' ? true : false
-          def self.identified?; @identified; end
+          def self.identified?; !!@identified; end
         end
       end
-
-      # @return [Boolean] Will be true if this message is an action.
-      def is_action?; !!@is_action; end
-
-      # @return [Boolean] Will be true if this message is a notice.
-      def is_notice?; !!@is_notice; end
     end
 
-    class CTCP < Message
+    class Notice < Privmsg; end
+
+    class CTCP < Privmsg
       # @return [Symbol] The type of the CTCP message.
       attr_accessor :ctcp_type
 
@@ -618,6 +611,8 @@ module IRCSupport
         end
       end
     end
+
+    class CTCP::Action < Privmsg; end
 
     class CTCPReply < CTCP; end
   end
