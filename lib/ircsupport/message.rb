@@ -535,11 +535,11 @@ module IRCSupport
 
     class ServerNotice < Message
       # @return [String] The sender of the notice. Could be a server name,
-      # a service, or nothing at all.
+      #   a service, or nothing at all.
       attr_accessor :sender
 
       # @return [String] The target of the server notice. Could be '*' or
-      # 'AUTH' or something else entirely.
+      #   'AUTH' or something else entirely.
       attr_accessor :target
 
       # @return [String] The text of the notice.
@@ -549,6 +549,7 @@ module IRCSupport
       def initialize(line, isupport, capabilities)
         super
         @sender = @prefix
+
         if @args.size == 2
           @target = @args[0]
           @message = @args[1]
