@@ -20,14 +20,23 @@ module IRCSupport
 
     # @return [Symbol] The type of the IRC message.
     def type
+      # type override
       return @type if @type
 
       # messages without their own subclass just use the IRC command name
       return @command.downcase.to_sym if self.class.name == 'IRCSupport::Message'
 
-      # if it's a subclass, default to a name based on the class name
+      # with a subclass, base it on the class name
       type = self.class.name.match(/^IRCSupport::Message::(.*)/)[1]
-      return type.gsub(/::|(?<=[[:lower:]])(?=[[:upper:]])/, '_').downcase.to_sym
+      type.gsub!(/::|(?<=[[:lower:]])(?=[[:upper:]])/, '_')
+
+      # subtype override
+      if @subtype
+        type.sub!(/_.*/, '')
+        return "#{type}_#{@subtype}".downcase.to_sym
+      else
+        return type.downcase.to_sym
+      end
     end
 
     class Numeric < Message
@@ -200,7 +209,7 @@ module IRCSupport
         @sender = @prefix
         @dcc_args = @args[1]
         @dcc_type = dcc_type.downcase.to_sym
-        @type = "dcc_#@dcc_type".to_sym
+        @subtype = @dcc_type
       end
     end
 
@@ -480,7 +489,7 @@ module IRCSupport
       def initialize(line, isupport, capabilities)
         super
         @subcommand = @args[0]
-        @type = "cap_#{@subcommand.downcase}".to_sym
+        @subtype = @subcommand
         if @args[1] == '*'
           @multipart = true
           @reply = @args[2]
@@ -602,7 +611,7 @@ module IRCSupport
         @sender = @prefix
         @ctcp_args = @args[1]
         @ctcp_type = ctcp_type.downcase.to_sym
-        @type = "ctcp_#@ctcp_type".to_sym
+        @subtype = @ctcp_type
 
         if @is_public
           @channel = @args[0].split(/,/).first
@@ -610,12 +619,6 @@ module IRCSupport
       end
     end
 
-    class CTCPReply < CTCP
-      # @private
-      def initialize(line, isupport, capabilities, ctcp_type)
-        super
-        @type = "ctcpreply_#@ctcp_type".to_sym
-      end
-    end
+    class CTCPReply < CTCP; end
   end
 end
