@@ -215,7 +215,7 @@ module IRCSupport
       '731' => 'RPL_MONOFFLINE',        # ratbox
       '732' => 'RPL_MONLIST',           # ratbox
       '733' => 'RPL_ENDOFMONLIST',      # ratbox
-      '732' => 'ERR_MONLISTFULL',       # ratbox
+      '734' => 'ERR_MONLISTFULL',       # ratbox
       '900' => 'RPL_SASLLOGIN',         # charybdis, ircd-seven
       '903' => 'RPL_SASLSUCCESS',       # charybdis, ircd-seven
       '904' => 'RPL_SASLFAILED',        # charybdis, ircd-seven
