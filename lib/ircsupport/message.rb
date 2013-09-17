@@ -586,7 +586,6 @@ module IRCSupport
         @message = @args[1]
 
         if isupport['CHANTYPES'].include?(@args[0][0])
-          @public = true
           # broadcast messages are so 90s
           @channel = @args[0].split(/,/).first
         end
@@ -596,14 +595,19 @@ module IRCSupport
           @identified = @identified == '+' ? true : false
           def self.identified?; !!@identified; end
         end
-
-        def self.public?; !!@public; end
       end
     end
 
     class Notice < Privmsg; end
 
-    class CTCP < Privmsg
+    class CTCP < Message
+      # @return [String] The user who sent the message.
+      attr_accessor :sender
+
+      # @return [String] The name of the channel this message was sent to,
+      #   if any.
+      attr_accessor :channel
+
       # @return [Symbol] The type of the CTCP message.
       attr_accessor :ctcp_type
 
@@ -613,14 +617,34 @@ module IRCSupport
       # @private
       def initialize(line, isupport, capabilities, ctcp_type)
         super(line, isupport, capabilities)
+        @sender = @prefix
         @ctcp_args = @args[1]
         @ctcp_type = ctcp_type.downcase.to_sym
         @subtype = @ctcp_type
+
+        if isupport['CHANTYPES'].include?(@args[0][0])
+          # broadcast messages are so 90s
+          @channel = @args[0].split(/,/).first
+        end
       end
     end
 
-    class CTCP::Action < Privmsg; end
-
     class CTCPReply < CTCP; end
+
+    class CTCP::Action < CTCP
+      # @return [String] The text of the message.
+      attr_accessor :message
+
+      def initialize(line, isupport, capabilities, ctcp_type)
+        super
+        @message = @args[1]
+
+        if capabilities.include?('identify-msg')
+          @identified, @message = @message.split(//, 2)
+          @identified = @identified == '+' ? true : false
+          def self.identified?; !!@identified; end
+        end
+      end
+    end
   end
 end

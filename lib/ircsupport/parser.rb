@@ -226,7 +226,7 @@ module IRCSupport
 
       rx = @capabilities.include?('identify-msg') ? /(?<=^.)ACTION / : /^ACTION /
       if line.args[1].sub!(rx, '')
-        return IRCSupport::Message::CTCP::Action.new(line, @isupport, @capabilities)
+        return IRCSupport::Message::CTCP::Action.new(line, @isupport, @capabilities, 'ACTION')
       end
 
       if line.args[1] !~ /^(\w+)(?: (.*))?/
@@ -243,23 +243,23 @@ module IRCSupport
         dcc_name, dcc_args = $~.captures
         line.args[1] = dcc_args
 
-        message_class = begin
+        msg_class = begin
           constantize("IRCSupport::Message::DCC::" + dcc_name.capitalize)
         rescue
           constantize("IRCSupport::Message::DCC")
         end
 
-        return message_class.new(line, @isupport, @capabilities, dcc_name)
+        return msg_class.new(line, @isupport, @capabilities, dcc_name)
       else
         line.args[1] = ctcp_args || ''
 
-        message_class = begin
+        msg_class = begin
           constantize("IRCSupport::Message::#{ctcp_type}_" + ctcp_name.capitalize)
         rescue
           constantize("IRCSupport::Message::#{ctcp_type}")
         end
 
-        return message_class.new(line, @isupport, @capabilities, ctcp_name)
+        return msg_class.new(line, @isupport, @capabilities, ctcp_name)
       end
     end
 
