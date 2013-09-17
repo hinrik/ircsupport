@@ -43,7 +43,7 @@ module IRCSupport
 
       # @return [Boolean] Will be true if this is an error numeric.
       def is_error?
-        return @name =~ /^ERR/ ? true : false
+        return !!(@name =~ /^ERR/)
       end
     end
 
@@ -583,10 +583,10 @@ module IRCSupport
       end
 
       # @return [Boolean] Will be true if this message is an action.
-      def is_action?; @is_action; end
+      def is_action?; !!@is_action; end
 
       # @return [Boolean] Will be true if this message is a notice.
-      def is_notice?; @is_notice; end
+      def is_notice?; !!@is_notice; end
     end
 
     class CTCP < Message
