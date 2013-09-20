@@ -113,11 +113,7 @@ module IRCSupport
           line.tags = {}
           c[:tags].split(/;/).each do |tag|
             key, value = tag.split(/=/)
-            if value
-              line.tags[key] = value
-            else
-              line.tags[key] = true
-            end
+            line.tags[key] = value ? value : true
           end
         end
 
