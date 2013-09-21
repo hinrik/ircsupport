@@ -15,7 +15,7 @@ module IRCSupport
     # @private
     @@illegal     = '\x00\x0a\x0d'
     # @private
-    @@eol         = /\x0d?\x0a/
+    @@eol         = /[\x0d\x0a]+/
     # @private
     @@space       = / +/
     # @private
