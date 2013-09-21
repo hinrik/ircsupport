@@ -43,6 +43,11 @@ describe "Parse" do
     proc { parser.compose(fail_line) }.must_raise ArgumentError
     fail_line.prefix = "foo"
     proc { parser.compose(fail_line) }.must_raise ArgumentError
+
+    with_space = line.dup
+    with_space.args = with_space.args.dup
+    with_space.args[0] = "with space"
+    proc { parser.compose(with_space) }.must_raise ArgumentError
   end
 
   it "should fail to decompose the IRC line" do
