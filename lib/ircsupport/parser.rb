@@ -11,7 +11,7 @@ module IRCSupport
     # @private
     @@value       = /[^ ;\x00\x07\x0a\x0d]+/
     # @private
-    @@tag         = %r{ (?:#@@hostname/)? #@@key (?:=#@@value)? }x
+    @@tag         = %r{ (?:#@@hostname/)? #@@key (?:=#@@value?)? }x
     # @private
     @@illegal     = '\x00\x0a\x0d'
     # @private

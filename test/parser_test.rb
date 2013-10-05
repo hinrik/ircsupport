@@ -23,11 +23,12 @@ describe "Parse" do
   end
 
   it 'should parse tags' do
-    raw_tags = "@foo=bar;hlagh.com/quux=what;hello/hi;no #{raw_line}"
+    raw_tags = "@foo=bar;hlagh.com/quux=what;boo=;hello/hi;no #{raw_line}"
     tag_line = parser.decompose(raw_tags)
     tag_line.tags.must_equal({
       'foo' => 'bar',
       'hlagh.com/quux' => 'what',
+      'boo' => true,
       'hello/hi' => true,
       'no' => true,
     })
